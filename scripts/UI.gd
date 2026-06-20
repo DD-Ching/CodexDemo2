@@ -54,20 +54,20 @@ func set_warning(text: String) -> void:
 
 
 func set_fear(value: float) -> void:
-	var percent := int(round(value * 100.0))
+	var percent: int = int(round(value * 100.0))
 	fear_label.text = "Fear: %d%%" % percent
 	heartbeat_overlay.color.a = clampf(value * 0.22, 0.0, 0.22)
 
 
 func flash_flicker(strength: float = 0.7) -> void:
 	flicker_overlay.color.a = strength
-	var tween := create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(flicker_overlay, "color:a", 0.0, 0.35)
 
 
 func flash_silhouette() -> void:
 	silhouette.color.a = 0.75
-	var tween := create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(silhouette, "color:a", 0.0, 0.45)
 
 

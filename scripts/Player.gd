@@ -26,7 +26,7 @@ var nearby_hiding_spot: Node = null
 var _flashlight_points: PackedVector2Array = PackedVector2Array()
 var _noise_timer: float = 0.0
 var _camera_trauma: float = 0.0
-var _rng := RandomNumberGenerator.new()
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 @onready var flashlight_cone: Polygon2D = $FlashlightCone
 @onready var personal_light: PointLight2D = $PersonalLight
@@ -69,10 +69,10 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		noise_level = 0.0
 	else:
-		var input_vector := _get_input_vector()
-		var sprinting := input_vector != Vector2.ZERO and Input.is_key_pressed(KEY_SHIFT) and stamina > 0.0
-		var fear_modifier := 1.0 - fear_level * fear_speed_penalty
-		var move_speed := walk_speed
+		var input_vector: Vector2 = _get_input_vector()
+		var sprinting: bool = input_vector != Vector2.ZERO and Input.is_key_pressed(KEY_SHIFT) and stamina > 0.0
+		var fear_modifier: float = 1.0 - fear_level * fear_speed_penalty
+		var move_speed: float = walk_speed
 		if sprinting:
 			move_speed = sprint_speed
 			stamina = max(stamina - stamina_drain_rate * delta, 0.0)
@@ -108,7 +108,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(delta: float) -> void:
-	var shake_strength := fear_level * fear_level
+	var shake_strength: float = fear_level * fear_level
 	if shake_strength > 0.0:
 		_camera_trauma = min(_camera_trauma + shake_strength * delta * 1.6, 0.65)
 	else:
@@ -129,7 +129,7 @@ func set_fear(value: float) -> void:
 
 
 func get_visibility_bonus() -> float:
-	var bonus := 0.0
+	var bonus: float = 0.0
 	if flashlight_on:
 		bonus += 0.18
 	if is_hiding:
@@ -141,17 +141,17 @@ func is_flashlight_affecting_point(point: Vector2) -> bool:
 	if not flashlight_on or battery <= 0.0:
 		return false
 
-	var to_point := point - global_position
+	var to_point: Vector2 = point - global_position
 	if to_point.length() > 230.0:
 		return false
 
-	var forward := Vector2.RIGHT.rotated(rotation)
-	var angle := abs(forward.angle_to(to_point.normalized()))
+	var forward: Vector2 = Vector2.RIGHT.rotated(rotation)
+	var angle: float = abs(forward.angle_to(to_point.normalized()))
 	return angle <= deg_to_rad(22.0)
 
 
 func _get_input_vector() -> Vector2:
-	var input_vector := Vector2(
+	var input_vector: Vector2 = Vector2(
 		float(Input.is_key_pressed(KEY_D)) - float(Input.is_key_pressed(KEY_A)),
 		float(Input.is_key_pressed(KEY_S)) - float(Input.is_key_pressed(KEY_W))
 	)
@@ -188,11 +188,11 @@ func _update_personal_light() -> void:
 
 
 func _make_light_texture() -> Texture2D:
-	var image := Image.create(128, 128, false, Image.FORMAT_RGBA8)
+	var image: Image = Image.create(128, 128, false, Image.FORMAT_RGBA8)
 	for y in range(128):
 		for x in range(128):
-			var uv := Vector2(x - 64.0, y - 64.0) / 64.0
-			var alpha := clampf(1.0 - uv.length(), 0.0, 1.0)
+			var uv: Vector2 = Vector2(x - 64.0, y - 64.0) / 64.0
+			var alpha: float = clampf(1.0 - uv.length(), 0.0, 1.0)
 			alpha *= alpha
 			image.set_pixel(x, y, Color(1, 1, 1, alpha))
 	return ImageTexture.create_from_image(image)

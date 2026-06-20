@@ -34,11 +34,14 @@ var _lost_sight_timer: float = 0.0
 var _patrol_index: int = 0
 var _facing := Vector2.RIGHT
 var _rng := RandomNumberGenerator.new()
+var _last_position: Vector2 = Vector2.ZERO
+var _stuck_time: float = 0.0
 
 @onready var body_visual: Polygon2D = $Body
 
 func _ready() -> void:
 	_rng.randomize()
+	_last_position = global_position
 	_emit_state()
 
 
@@ -103,12 +106,14 @@ func _physics_process(delta: float) -> void:
 		GhostState.SEARCH:
 			target_velocity = _update_search(delta)
 
+	target_velocity = _steer_velocity(target_velocity)
 	velocity = target_velocity * flashlight_slow_factor
 	if velocity.length() > 0.0:
 		_facing = velocity.normalized()
 		rotation = _facing.angle() + PI / 2.0
 
 	move_and_slide()
+	_update_stuck_state(delta, target_velocity)
 	body_visual.color = Color(0.82 + _rng.randf() * 0.08, 0.92, 1, 0.9)
 
 	if global_position.distance_to(player.global_position) < 22.0:
@@ -159,6 +164,65 @@ func _update_search(delta: float) -> Vector2:
 		return Vector2.ZERO
 
 	return global_position.direction_to(search_target) * search_speed
+
+
+func _steer_velocity(desired_velocity: Vector2) -> Vector2:
+	if desired_velocity == Vector2.ZERO:
+		return Vector2.ZERO
+
+	var desired_direction: Vector2 = desired_velocity.normalized()
+	var probe_distance: float = 14.0
+	if not test_move(global_transform, desired_direction * probe_distance):
+		return desired_velocity
+
+	var horizontal := Vector2(signf(desired_direction.x), 0.0)
+	if horizontal != Vector2.ZERO and not test_move(global_transform, horizontal * probe_distance):
+		return horizontal * desired_velocity.length()
+
+	var vertical := Vector2(0.0, signf(desired_direction.y))
+	if vertical != Vector2.ZERO and not test_move(global_transform, vertical * probe_distance):
+		return vertical * desired_velocity.length()
+
+	var left_perp: Vector2 = desired_direction.orthogonal()
+	if not test_move(global_transform, left_perp * probe_distance):
+		return left_perp * desired_velocity.length()
+
+	var right_perp: Vector2 = -left_perp
+	if not test_move(global_transform, right_perp * probe_distance):
+		return right_perp * desired_velocity.length()
+
+	return Vector2.ZERO
+
+
+func _update_stuck_state(delta: float, target_velocity: Vector2) -> void:
+	var moved_distance: float = global_position.distance_to(_last_position)
+	if target_velocity.length() > 0.0 and moved_distance < 1.0:
+		_stuck_time += delta
+	else:
+		_stuck_time = 0.0
+
+	_last_position = global_position
+
+	if _stuck_time < 0.9:
+		return
+
+	_stuck_time = 0.0
+	match state:
+		GhostState.PATROL:
+			if not patrol_points.is_empty():
+				_patrol_index = (_patrol_index + 1) % patrol_points.size()
+		GhostState.INVESTIGATE:
+			search_anchor = investigate_target
+			search_target = _random_search_point()
+			_change_state(GhostState.SEARCH)
+			_state_timer = search_duration
+		GhostState.CHASE:
+			search_anchor = last_seen_position
+			search_target = _random_search_point()
+			_change_state(GhostState.SEARCH)
+			_state_timer = search_duration
+		GhostState.SEARCH:
+			search_target = _random_search_point()
 
 
 func _change_state(next_state: GhostState) -> void:
