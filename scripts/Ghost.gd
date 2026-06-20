@@ -118,7 +118,7 @@ func _physics_process(delta: float) -> void:
 	_update_stuck_state(delta, target_velocity)
 	body_visual.color = Color(0.82 + _rng.randf() * 0.08, 0.92, 1, 0.9)
 
-	if global_position.distance_to(player.global_position) < 22.0:
+	if global_position.distance_to(player.global_position) < 18.0:
 		player_caught.emit()
 
 
@@ -175,7 +175,7 @@ func _steer_velocity(desired_velocity: Vector2, delta: float) -> Vector2:
 		return Vector2.ZERO
 
 	var desired_direction: Vector2 = desired_velocity.normalized()
-	var probe_distance: float = 14.0
+	var probe_distance: float = 10.0
 	if not test_move(global_transform, desired_direction * probe_distance):
 		_wall_follow_time = 0.0
 		_wall_follow_direction = Vector2.ZERO
