@@ -1,0 +1,119 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/UI.gd" id="1"]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopLeft" type="VBoxContainer" parent="HUD"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 300.0
+offset_bottom = 200.0
+
+[node name="KeysLabel" type="Label" parent="HUD/TopLeft"]
+text = "Keys: 0 / 3"
+
+[node name="GhostStateLabel" type="Label" parent="HUD/TopLeft"]
+text = "Ghost: PATROL"
+
+[node name="WarningLabel" type="Label" parent="HUD/TopLeft"]
+text = ""
+modulate = Color(1, 0.45, 0.45, 1)
+
+[node name="FearLabel" type="Label" parent="HUD/TopLeft"]
+text = "Fear: 0%"
+
+[node name="StaminaLabel" type="Label" parent="HUD/TopLeft"]
+text = "Stamina"
+
+[node name="StaminaBar" type="ProgressBar" parent="HUD/TopLeft"]
+max_value = 100.0
+value = 100.0
+
+[node name="BatteryLabel" type="Label" parent="HUD/TopLeft"]
+text = "Flashlight"
+
+[node name="BatteryBar" type="ProgressBar" parent="HUD/TopLeft"]
+max_value = 100.0
+value = 100.0
+
+[node name="CenterMessage" type="Label" parent="HUD"]
+layout_mode = 0
+offset_left = 382.0
+offset_top = 34.0
+offset_right = 898.0
+offset_bottom = 90.0
+horizontal_alignment = 1
+text = ""
+modulate = Color(0.9, 0.9, 1, 0)
+
+[node name="HeartbeatOverlay" type="ColorRect" parent="HUD"]
+layout_mode = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.35, 0.02, 0.02, 0)
+
+[node name="FlickerOverlay" type="ColorRect" parent="HUD"]
+layout_mode = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="Silhouette" type="ColorRect" parent="HUD"]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 150.0
+offset_right = 1010.0
+offset_bottom = 320.0
+mouse_filter = 2
+color = Color(0.03, 0.03, 0.04, 0)
+
+[node name="EndScreen" type="Panel" parent="HUD"]
+visible = false
+layout_mode = 0
+offset_left = 400.0
+offset_top = 180.0
+offset_right = 880.0
+offset_bottom = 540.0
+
+[node name="EndVBox" type="VBoxContainer" parent="HUD/EndScreen"]
+layout_mode = 0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -90.0
+offset_right = 160.0
+offset_bottom = 90.0
+
+[node name="EndTitle" type="Label" parent="HUD/EndScreen/EndVBox"]
+text = "Game Over"
+horizontal_alignment = 1
+
+[node name="EndBody" type="Label" parent="HUD/EndScreen/EndVBox"]
+text = "The ghost tagged you."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="RestartButton" type="Button" parent="HUD/EndScreen/EndVBox"]
+text = "Restart"

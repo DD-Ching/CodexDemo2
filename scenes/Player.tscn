@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 14.0
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 1
+collision_mask = 2
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="Body" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, -14, 11, -3, 8, 12, -8, 12, -11, -3)
+color = Color(0.8, 0.86, 0.98, 1)
+
+[node name="PersonalLight" type="PointLight2D" parent="."]
+texture_scale = 3.0
+energy = 1.5
+range_item_cull_mask = 1
+
+[node name="FlashlightCone" type="Polygon2D" parent="."]
+color = Color(1, 0.95, 0.75, 0.18)
+
+[node name="InteractionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("1")
+scale = Vector2(3.5, 3.5)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = true
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
