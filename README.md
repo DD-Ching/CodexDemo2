@@ -48,6 +48,12 @@ CodexDemo2/
 3. Let Godot re-save imported scene metadata if prompted.
 4. Open [scenes/Main.tscn](/Users/ddh/Downloads/CodexDemo2/scenes/Main.tscn) and run the scene.
 
+## GitHub Pages
+
+- The repo includes [export_presets.cfg](/Users/ddh/Downloads/CodexDemo2/export_presets.cfg) with a `Web` export preset.
+- The Pages workflow at [.github/workflows/deploy-pages.yml](/Users/ddh/Downloads/CodexDemo2/.github/workflows/deploy-pages.yml) downloads Godot 4.2.2, exports the project to Web, and deploys it with GitHub Pages.
+- After enabling Pages with **Source = GitHub Actions**, the published project URL should be `https://dd-ching.github.io/CodexDemo2/`.
+
 ## How each scene is set up
 
 ### Main.tscn
