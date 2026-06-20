@@ -42,11 +42,11 @@ func _process(delta: float) -> void:
 	if game_finished:
 		return
 
-	var ghost_distance := player.global_position.distance_to(ghost.global_position)
-	var proximity_fear := inverse_lerp(420.0, 85.0, ghost_distance)
-	var darkness_fear := 0.2 if not player.flashlight_on else 0.0
-	var calm_bonus := 0.18 if player.flashlight_on and ghost_distance > 300.0 else 0.0
-	var fear := clampf(proximity_fear + darkness_fear - calm_bonus, 0.0, 1.0)
+	var ghost_distance: float = player.global_position.distance_to(ghost.global_position)
+	var proximity_fear: float = inverse_lerp(420.0, 85.0, ghost_distance)
+	var darkness_fear: float = 0.2 if not player.flashlight_on else 0.0
+	var calm_bonus: float = 0.18 if player.flashlight_on and ghost_distance > 300.0 else 0.0
+	var fear: float = clampf(proximity_fear + darkness_fear - calm_bonus, 0.0, 1.0)
 
 	player.set_fear(fear)
 	ui.set_fear(fear)

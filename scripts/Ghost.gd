@@ -183,23 +183,23 @@ func _can_see_player() -> bool:
 	if player == null:
 		return false
 
-	var to_player := player.global_position - global_position
-	var distance := to_player.length()
-	var bonus := player.get_visibility_bonus() if player.has_method("get_visibility_bonus") else 0.0
-	var allowed_distance := vision_radius * (1.0 + bonus)
+	var to_player: Vector2 = player.global_position - global_position
+	var distance: float = to_player.length()
+	var bonus: float = player.get_visibility_bonus() if player.has_method("get_visibility_bonus") else 0.0
+	var allowed_distance: float = vision_radius * (1.0 + bonus)
 	if distance > allowed_distance:
 		return false
 
 	if player.is_hiding and state != GhostState.CHASE and distance > 62.0:
 		return false
 
-	var forward := _facing
-	var vision_arc := deg_to_rad(130.0 if state == GhostState.CHASE else 100.0)
-	var angle := abs(forward.angle_to(to_player.normalized()))
+	var forward: Vector2 = _facing
+	var vision_arc: float = deg_to_rad(130.0 if state == GhostState.CHASE else 100.0)
+	var angle: float = abs(forward.angle_to(to_player.normalized()))
 	if angle > vision_arc * 0.5:
 		return false
 
-	var query := PhysicsRayQueryParameters2D.create(global_position, player.global_position)
+	var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(global_position, player.global_position)
 	query.collide_with_areas = false
 	query.collide_with_bodies = true
 	query.collision_mask = 2
