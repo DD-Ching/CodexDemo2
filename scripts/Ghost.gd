@@ -36,6 +36,8 @@ var _facing := Vector2.RIGHT
 var _rng := RandomNumberGenerator.new()
 var _last_position: Vector2 = Vector2.ZERO
 var _stuck_time: float = 0.0
+var _wall_follow_direction: Vector2 = Vector2.ZERO
+var _wall_follow_time: float = 0.0
 
 @onready var body_visual: Polygon2D = $Body
 
@@ -106,7 +108,7 @@ func _physics_process(delta: float) -> void:
 		GhostState.SEARCH:
 			target_velocity = _update_search(delta)
 
-	target_velocity = _steer_velocity(target_velocity)
+	target_velocity = _steer_velocity(target_velocity, delta)
 	velocity = target_velocity * flashlight_slow_factor
 	if velocity.length() > 0.0:
 		_facing = velocity.normalized()
@@ -166,32 +168,57 @@ func _update_search(delta: float) -> Vector2:
 	return global_position.direction_to(search_target) * search_speed
 
 
-func _steer_velocity(desired_velocity: Vector2) -> Vector2:
+func _steer_velocity(desired_velocity: Vector2, delta: float) -> Vector2:
 	if desired_velocity == Vector2.ZERO:
+		_wall_follow_time = 0.0
+		_wall_follow_direction = Vector2.ZERO
 		return Vector2.ZERO
 
 	var desired_direction: Vector2 = desired_velocity.normalized()
 	var probe_distance: float = 14.0
 	if not test_move(global_transform, desired_direction * probe_distance):
+		_wall_follow_time = 0.0
+		_wall_follow_direction = Vector2.ZERO
 		return desired_velocity
 
-	var horizontal := Vector2(signf(desired_direction.x), 0.0)
-	if horizontal != Vector2.ZERO and not test_move(global_transform, horizontal * probe_distance):
-		return horizontal * desired_velocity.length()
+	if _wall_follow_time > 0.0 and _wall_follow_direction != Vector2.ZERO:
+		_wall_follow_time = maxf(_wall_follow_time - delta, 0.0)
+		if not test_move(global_transform, _wall_follow_direction * probe_distance):
+			return _wall_follow_direction * desired_velocity.length()
 
-	var vertical := Vector2(0.0, signf(desired_direction.y))
-	if vertical != Vector2.ZERO and not test_move(global_transform, vertical * probe_distance):
-		return vertical * desired_velocity.length()
-
-	var left_perp: Vector2 = desired_direction.orthogonal()
-	if not test_move(global_transform, left_perp * probe_distance):
-		return left_perp * desired_velocity.length()
-
-	var right_perp: Vector2 = -left_perp
-	if not test_move(global_transform, right_perp * probe_distance):
-		return right_perp * desired_velocity.length()
+	var chosen_direction: Vector2 = _choose_wall_follow_direction(desired_direction, probe_distance)
+	if chosen_direction != Vector2.ZERO:
+		_wall_follow_direction = chosen_direction
+		_wall_follow_time = 0.6
+		return chosen_direction * desired_velocity.length()
 
 	return Vector2.ZERO
+
+
+func _choose_wall_follow_direction(desired_direction: Vector2, probe_distance: float) -> Vector2:
+	var candidates: Array[Vector2] = [
+		desired_direction.orthogonal(),
+		-desired_direction.orthogonal(),
+		Vector2(signf(desired_direction.x), 0.0),
+		Vector2(0.0, signf(desired_direction.y)),
+	]
+	var best_direction: Vector2 = Vector2.ZERO
+	var best_score: float = -INF
+
+	for candidate in candidates:
+		if candidate == Vector2.ZERO:
+			continue
+		if test_move(global_transform, candidate * probe_distance):
+			continue
+
+		var score: float = candidate.dot(desired_direction)
+		if abs(candidate.dot(desired_direction.orthogonal())) > 0.9:
+			score += 0.35
+		if score > best_score:
+			best_score = score
+			best_direction = candidate
+
+	return best_direction
 
 
 func _update_stuck_state(delta: float, target_velocity: Vector2) -> void:
@@ -207,6 +234,8 @@ func _update_stuck_state(delta: float, target_velocity: Vector2) -> void:
 		return
 
 	_stuck_time = 0.0
+	_wall_follow_time = 0.0
+	_wall_follow_direction = Vector2.ZERO
 	match state:
 		GhostState.PATROL:
 			if not patrol_points.is_empty():
