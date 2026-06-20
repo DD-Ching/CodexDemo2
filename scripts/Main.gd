@@ -85,7 +85,8 @@ func _build_map() -> void:
 		{ "position": Vector2(220, 260), "size": Vector2(26, 280) },
 		{ "position": Vector2(560, -255), "size": Vector2(26, 290) },
 		{ "position": Vector2(560, 255), "size": Vector2(26, 290) },
-		{ "position": Vector2(520, 0), "size": Vector2(26, 190) },
+		# Keep the right corridor actually passable for both player and ghost.
+		{ "position": Vector2(500, 0), "size": Vector2(10, 190) },
 		{ "position": Vector2(-515, -115), "size": Vector2(180, 26) },
 		{ "position": Vector2(390, -115), "size": Vector2(180, 26) },
 		{ "position": Vector2(-515, 115), "size": Vector2(180, 26) },
