@@ -27,25 +27,25 @@ jobs:
         with:
           enablement: true
 
-      - name: Download Godot 4.2.2
+      - name: Download Godot 4.7
         run: |
           set -eux
-          curl -L -o godot.zip 'https://downloads.godotengine.org/?version=4.2.2&flavor=stable&slug=linux.x86_64.zip&platform=linux.64'
-          curl -L -o export_templates.tpz 'https://downloads.godotengine.org/?version=4.2.2&flavor=stable&slug=export_templates.tpz&platform=templates'
+          curl -L -o godot.zip 'https://downloads.godotengine.org/?version=4.7&flavor=stable&slug=linux.x86_64.zip&platform=linux.64'
+          curl -L -o export_templates.tpz 'https://downloads.godotengine.org/?version=4.7&flavor=stable&slug=export_templates.tpz&platform=templates'
           unzip -q godot.zip -d godot-bin
-          mkdir -p "$HOME/.local/share/godot/export_templates/4.2.2.stable"
-          unzip -q export_templates.tpz -d "$HOME/.local/share/godot/export_templates/4.2.2.stable"
-          if [ -d "$HOME/.local/share/godot/export_templates/4.2.2.stable/templates" ]; then
-            mv "$HOME/.local/share/godot/export_templates/4.2.2.stable/templates/"* "$HOME/.local/share/godot/export_templates/4.2.2.stable/"
-            rmdir "$HOME/.local/share/godot/export_templates/4.2.2.stable/templates"
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.stable"
+          unzip -q export_templates.tpz -d "$HOME/.local/share/godot/export_templates/4.7.stable"
+          if [ -d "$HOME/.local/share/godot/export_templates/4.7.stable/templates" ]; then
+            mv "$HOME/.local/share/godot/export_templates/4.7.stable/templates/"* "$HOME/.local/share/godot/export_templates/4.7.stable/"
+            rmdir "$HOME/.local/share/godot/export_templates/4.7.stable/templates"
           fi
-          chmod +x godot-bin/Godot_v4.2.2-stable_linux.x86_64
+          chmod +x godot-bin/Godot_v4.7-stable_linux.x86_64
 
       - name: Export Web build
         run: |
           set -eux
           mkdir -p build/web
-          godot-bin/Godot_v4.2.2-stable_linux.x86_64 --headless --path . --export-release Web build/web/index.html
+          godot-bin/Godot_v4.7-stable_linux.x86_64 --headless --path . --export-release Web build/web/index.html
           touch build/web/.nojekyll
 
       - name: Upload GitHub Pages artifact
